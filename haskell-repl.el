@@ -99,7 +99,15 @@
            (insert (haskell-interactive-mode-cleanup-response
                     (cl-caddr state) response))
            (haskell-interactive-mode-handle-h)
-           (buffer-string))))
+           (delete-trailing-whitespace)
+           (kill-whole-line)
+           (beginning-of-buffer)
+           (kill-whole-line)
+           (write-region (point-min) (point-max) "~/tmp/haskellrepl")
+           (erase-buffer)
+           (shell-command "tr -cd '[:print:]\n' < ~/tmp/haskellrepl | sed 's/\\[\\?1l>\\(.*\\)/\\1/'" t)
+           (buffer-string)
+           )))
     (when haskell-interactive-mode-eval-mode
       (unless (haskell-process-sent-stdin-p (cadr state))
         (haskell-interactive-mode-eval-as-mode (car state) response))))
